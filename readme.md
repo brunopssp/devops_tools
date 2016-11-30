@@ -70,9 +70,8 @@ O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File C
     - **Run_Powershell.scriptToRun**: Nome do script que será executado(ponto de entrada).
     - **Run_PowerShell.scriptArguments**: Variável para especificar o hostName da VM. O host name especificado aqui é usado para criar um certificado self-signed local para Https. Esse parametro será traduzido para  `*.brasilsouth.cloudapp.azure.com`. É possivel escolher uma convenção diferente se a VM participar de um domínio ou possui um formato fqdn diferente.
 
-    ```
-    /* WinRM Custom Script Parameters */
-         "Run_PowerShell.scriptFileUris": {
+    ```json
+          "Run_PowerShell.scriptFileUris": {
           "type": "string",
           "defaultValue": "[[\"https://raw.githubusercontent.com
                                     /Azure/azure-quickstart-templates
@@ -98,10 +97,9 @@ O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File C
     ```
   2. Na seção **_artifact_** do ARM template utilize o artefato powershell para realizar uma chamada para seu script powershell passando os parametros requeridos pelo script.
    
-   ```
+   ```json
     "artifacts": 
             [
-              /* Configure WinRm using Windows Run Powershell artifact */
               {
                 "artifactId": 
                     "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', 
@@ -130,7 +128,7 @@ O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File C
 ### Criar arquivo de coleta de variáveis para deploy
 Esse script, quando roda no agente como parte do release definition, coleta os valores que serão necessários para o deploy da aplicação do app se tarefas como Azure File Copy ou PowerShell on Target Machines são utilizadas. Essas tarefas são normalmente utilizadas para deploy de aplicações para um uma VM Azure, e elas precisam de valores como VM Resource Group name, IP address, e fully-qualified domain name (FDQN).
   1. Abra um editor de texto e copie o seguinte script.
-    ```
+    ```powershell
     Param( [string] $labVmId)
 
     $labVmComputeId = (Get-AzureRmResource -Id $labVmId).Properties.ComputeId
@@ -195,13 +193,14 @@ O próximo estágio será para executar o script criado anteriormente para colet
   - Como argumento para o script insira o nome da variável de ambiente que foi automaticamente com o ID da lab VM pela tarefa anterior, por exemplo: -labVmId '$(labVMId)'
   
 > O script coleta os valores que serão necessários e os armazena em variáveis de ambiente no release definition para facilmente serem referenciadas nas tarefas subsequentes.
+
 #### Azure File Copy: 
 Essa tarefa é utilizada para copiar os arquivos da aplicação e outros artefatos que são necessários para instalar a aplicação na VM Azure. Nesse caso iremos copiar todo o conteúdo do drop para a VM recem criada.
 #### Powershell on Target Machines: 
 Agora que todos artefatos foram copiados na nova VM provisionada, usaremos a execução remota do Powershell para executar um script DSC.
 
-Esse é um script básico de DSC, ele define a garantia de IIS e ASP.NET no servidor de destino…
-```
+Esse é um script básico de DSC, ele define a garantia de IIS e ASP.NET no servidor de destino.
+```powershell
 Configuration iis {
         
         Import-DscResource -ModuleName PSDesiredStateConfiguration;
