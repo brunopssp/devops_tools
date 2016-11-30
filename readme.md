@@ -187,9 +187,9 @@ Abaixo, em destaque, estão os parâmetros do template. Esses campos premitem so
 ![configure-vm](img/configure-vm.png)
 
 #### Azure Powershell: 
-O próximo estágio será para executar o script criado anteriormente para coletar os detalhes da DevTest Labs VM. Na release definition, selecione Add tasks e adicione uma tarefa Azure PowerShell da aba Deploy. Configure a tarefa:
-  -Selecione Azure Resource Manager para o tipo de conexão.
-  - Selecione o endpoint  do Azure Resource Manager criado anteriormente.
+O próximo estágio será executar o script criado anteriormente para coletar os detalhes da DevTest Labs VM. Na release definition, selecione **Add tasks** e adicione uma tarefa **Azure PowerShell** da aba **Deploy**. Configure a tarefa:
+  - Selecione Azure Resource Manager para o tipo de conexão.
+  - Selecione o endpoint do Azure Resource Manager criado anteriormente.
   - Entre com o caminho completo e o nome do script que foi salvo no repositório de fonte. 
   - Como argumento para o script insira o nome da variável de ambiente que foi automaticamente com o ID da lab VM pela tarefa anterior, por exemplo: -labVmId '$(labVMId)'
   
