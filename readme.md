@@ -4,7 +4,7 @@ A solução foi desenhada para um cenário onde é possível criar uma vm, reali
 O cenário segue a seguinte estrutura de configuração. O restante do documento apresenta os detalhes de cada passo listado aqui.
 
 [Ambiente](#ambiente)
-  * [Instalar a extension](#instalar-a-extension)
+  * [Instalar a Extensão](#instalar-a-extensão)
   * [Configurar o Endpoint](#configurar-o-endpoint)
   
 [Solução](#solução)
@@ -14,22 +14,22 @@ O cenário segue a seguinte estrutura de configuração. O restante do documento
   * [Criar arquivo de coleta de variáveis para deploy](#criar-arquivo-de-coleta-de-variáveis-para-deploy)
   
 [Deploy (tasks)](#deploy-tasks)
-  * [Create VM](#create-vm)
-  * [Configure VM](#configure-vm)
-  * [Deploy Application](#deploy-application)
-  * [Run CodedUI Tests](#run-codedui-tests)
-  * [Create Image](#create-image)
-  * [Delete VM](#delete-vm)
+  * [Criar VM](#criar-vm)
+  * [Configurar VM](#configurar-vm)
+  * [Implantar Aplicação](#implantar-aplicação)
+  * [Rodar Testes CodedUI](#rodar-testes-codedui)
+  * [Criar Imagem](#criar-imagem)
+  * [Excluir VM](#excluir-vm)
 
 ## Ambiente
-### Instalar a Extension
+### Instalar a Extensão
 Inicie instalando a extensão [Azure DevTest Labs Tasks](https://marketplace.visualstudio.com/items?itemName=ms-azuredevtestlabs.tasks):
   - Para Team Services, escolha *Install*.
-  - Para Team Foundation Server, escolha *Download* e instale a extension no seu servidor.
+  - Para Team Foundation Server, escolha *Download* e instale a extensão no seu servidor.
 
 E depois instale a extensão [IIS Web App Deployment Using WinRM](https://marketplace.visualstudio.com/items?itemName=ms-vscs-rm.iiswebapp)
   - Para Team Services, escolha *Install*.
-  - Para Team Foundation Server, escolha *Download* e instale a extension no seu servidor.
+  - Para Team Foundation Server, escolha *Download* e instale a extensão no seu servidor.
 
 ### Configurar o Endpoint
 Siga esses passos para estabelecer uma conexão do Team Foundation Server com o Azure.
@@ -40,15 +40,15 @@ Siga esses passos para estabelecer uma conexão do Team Foundation Server com o 
 
 ## Solução
 ### Criar Lab no Azure DevTest Labs
-Os seguintes passos ilustram como utilizar o [portal Azure](portal.azure.com) para criar um lab no Azure DevTest Labs.
-  1. Entre no Azure portal.
-  2. Selecione More services, e então selecione DevTest Labs na lista.
-  3. Na página DevTest Labs, clique em Add.
-  4. Na página Create a DevTest Lab, selecione as especificações e configurações necessárias para criar o lab e clique em Create.
+Os seguintes passos ilustram como utilizar o [Portal Azure](http://portal.azure.com) para criar um lab no Azure DevTest Labs.
+  1. Entre no **[Portal Azure](http://portal.azure.com)**.
+  2. Selecione **More services**, e então selecione **DevTest Labs** na lista.
+  3. Na página **DevTest Labs**, clique em **Add**.
+  4. Na página **Create a DevTest Lab**, selecione as especificações e configurações necessárias para criar o lab e clique em **Create**.
 	
 ### Criar ARM Template
 Execute essas tarefas para criar o template do Azure Resource Manager (ARM) que será usado para criar uma Azure Virtual Machine sob demanda.
-  1. Entre no [Azure portal](portal.azure.com).
+  1. Entre no [Portal Azure](http://portal.azure.com).
   2. Selecione **More Services**, e então selecione **DevTest Labs** na lista.
   3. A partir da lista de labs, selecione o lab que se deseja criar a VM.
   4. Na página Overview do lab, selecione **+ Virtual Machine**.
@@ -61,14 +61,15 @@ Execute essas tarefas para criar o template do Azure Resource Manager (ARM) que 
   11. Selecione **OK** para fechar a página **View Azure Resource Manager Template**.
   12. Abra um editor de texto.
   13. Cole o template da área de tranferencia (Ctrl + V).
-  14. Salve o ARM template como um arquivo no seu computador. Nomeie o arquivo como **CreateVMTemplate.json**.
+  14. Salve o ARM template como um arquivo no seu computador. 
+  15. Nomeie o arquivo como **CreateVMTemplate.json**.
 
 ### Configurar WinRM no ARM Template
 O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File Copy* e *PowerShell on Target Machines*.
-  1. Na seção **_parameters_** do ARM template (**CreateVMTemplate.json**) inclua três parametros:
+  1. Na seção **_parameters_** do ARM template (**CreateVMTemplate.json**) inclua três parâmetros:
     - **Run_Powershell.scriptFileUris**: Links para os scripts de configuração do WinRM.
-    - **Run_Powershell.scriptToRun**: Nome do script que será executado(ponto de entrada).
-    - **Run_PowerShell.scriptArguments**: Variável para especificar o hostName da VM. O host name especificado aqui é usado para criar um certificado self-signed local para Https. Esse parametro será traduzido para  `*.brasilsouth.cloudapp.azure.com`. É possivel escolher uma convenção diferente se a VM participar de um domínio ou possui um formato fqdn diferente.
+    - **Run_Powershell.scriptToRun**: Nome do script que será executado (ponto de entrada).
+    - **Run_PowerShell.scriptArguments**: Variável para especificar o hostName da VM. O host name especificado aqui é usado para criar um certificado self-signed local para Https. Esse parâmetro será traduzido para  `*.brasilsouth.cloudapp.azure.com`. É possível escolher uma convenção diferente se a VM participar de um domínio ou possui um formato FQDN diferente.
 
     ```json
           "Run_PowerShell.scriptFileUris": {
@@ -95,7 +96,7 @@ O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File C
           "defaultValue": "[concat('*.',resourceGroup().location,'.cloudapp.azure.com')]"
         }
     ```
-  2. Na seção **_artifact_** do ARM template utilize o artefato powershell para realizar uma chamada para seu script powershell passando os parametros requeridos pelo script.
+  2. Na seção **_artifact_** do ARM template utilize o artefato powershell para realizar uma chamada para seu script powershell passando os parâmetros requeridos pelo script.
    
    ```json
     "artifacts": 
@@ -126,7 +127,7 @@ O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File C
   4. Realize o commit do template no seu sistema de controle de fontes.
   
 ### Criar arquivo de coleta de variáveis para deploy
-Esse script, quando roda no agente como parte do release definition, coleta os valores que serão necessários para o deploy da aplicação do app se tarefas como Azure File Copy ou PowerShell on Target Machines são utilizadas. Essas tarefas são normalmente utilizadas para deploy de aplicações para um uma VM Azure, e elas precisam de valores como VM Resource Group name, IP address, e fully-qualified domain name (FDQN).
+Esse script, quando roda no agente como parte do release definition, coleta os valores que serão necessários para o deploy da aplicação se tarefas como **Azure File Copy** ou **PowerShell on Target Machines** são utilizadas. Essas tarefas são normalmente utilizadas para deploy de aplicações para um uma VM Azure, e elas precisam de valores como VM Resource Group name, IP address, e fully-qualified domain name (FDQN).
   1. Abra um editor de texto e copie o seguinte script.
     ```powershell
     Param( [string] $labVmId)
@@ -158,30 +159,30 @@ Esse script, quando roda no agente como parte do release definition, coleta os v
   3. Nomeie o arquivo como GetLabVMParams.ps1.
 
 ## Deploy (tasks)
-  1. Na definição da release, clique na elipse(...) próxima ao nome do ambiente para abrir o menu de atalho e selecione Configure variables. 
-  2. Na caixa de diálogo Configure - environment, entre com os seguintes valores para as variáveis que serão utilizadas nas tarefas do release:
-    - User.Name: Entre com o nome do usuário que foi informado quando o ARM template foi criado no portal Azure.
-    - User.Password: Entre com a senha que foi informado quando o ARM template foi criado no portal Azure. Use o ícone para esconder a senha.
+  1. Na definição do release, clique na elipse(...) próxima ao nome do ambiente para abrir o menu de atalho e selecione **Configure variables**. 
+  2. Na caixa de diálogo **"Configure - environment"**, entre com os seguintes valores para as variáveis que serão utilizadas nas tarefas do release:
+    - User.Name: Entre com o nome do usuário que foi informado quando o ARM template foi criado no Portal Azure.
+    - User.Password: Entre com a senha que foi informado quando o ARM template foi criado no Portal Azure. Use o ícone para esconder a senha.
 	
-O resultado final da definição da Release, ficará como a imagem abaixo:
+O resultado final da definição do release, ficará como a imagem abaixo:
 
 ![tasks-deploy](img/tasks-deploy.png)
 
 Nas próximas seções será apresentado o  passo a passo para entender o processo de release em detalhe.
-### Create VM
+### Criar VM
 
 ![create-vm](img/create-vm.png)
 
 #### Azure DevTest Labs Create VM: 
 Clique em **Add build step**, clique na aba **deployment** e selecione **Azure DevTest Lab Create VM**
   - Configure o **Azure DevTest Lab Create VM** selecionando o Endpoint do Azure Resource Manager configurado anteriormente, selecione o nome do dev test lab onde será realizado o deploy e selecione o ARM template.
-Abaixo, em destaque, estão os parametros do template. Esses campos premitem sobrescrever os parametros requeridos pelo ARM template.
+Abaixo, em destaque, estão os parâmetros do template. Esses campos premitem sobrescrever os parâmetros requeridos pelo ARM template.
     1. Como demonstrado na figura abaixo, foram criadas variáveis de build para User.UserName, User.Password e a variável nativa Build.BuildNumber para o nome da VM.
     2. A variável em Output variable foi criada para armazenar o valor do id da VM que foi criada nesse processo.
     
 ![create-vm-01](img/create-vm.01.png)
 
-### Configure VM
+### Configurar VM
 
 ![configure-vm](img/configure-vm.png)
 
@@ -224,7 +225,7 @@ iis
 Start-DscConfiguration -Path .\iis -Wait -Verbose 
 ```
 
-### Deploy Application
+### Implantar Aplicação
 
 ![deploy-application](img/deploy-application.png)
 
@@ -232,7 +233,7 @@ Start-DscConfiguration -Path .\iis -Wait -Verbose
 Essa tarefa habilita a configuração e atualização de app pools e web sites no IIS 
 #### IIS Web App Deployment using WinRM: 
 Essa tarefa permite informar a localização do pacote do Web Deploy, e instalar a aplicação informando o website.
-### Run CodedUI Tests
+### Rodar Testes CodedUI
 
 ![run-codedui-tests](img/run-codedui-tests.png)
 
@@ -240,15 +241,26 @@ Essa tarefa permite informar a localização do pacote do Web Deploy, e instalar
 Essa tarefa permite a instalação do agente de teste na máquina destino. Esse Agente de Teste pode então ser utilizado para habilitar coleta de dados ou rodar testes distribuidos usando o Visual Studio Test.
 #### Run Functional Tests: 
 O Projeto possui alguns testes funcionais que serão rodados após o deployment.
-### Create Image
+### Criar Imagem
 
 ![create-image](img/create-image.png)
 
 #### Azure DevTest Labs Create Custom Image: 
 Agora que a aplicação foi instalada e testada, vamos capturar o estado da VM como uma imagem customizada. Isso é especialmente útil se é identificado um bug no processo e é necessário reproduzir o bug na mesma VM, tendo uma imagem customizada da VM irá ajudar na reprodução desse bug mais rapidamente.
-### Delete VM
+### Excluir VM
 
 ![delete-vm](img/delete-vm.png)
 
 #### Azure DevTest Labs Delete VM: 
-Com a infraestrutura disponibilizada, a aplicação instalada e testada e o estado da VM capturada em uma imagem, parece sensato excluir a VM. The AzureDevTestLab extension provides a task to delete an existing DevTestLab VM. As you can see below, I am passing $(labVMId) as the Lab VM Id to be deleted. This parameter is populated as part of the Create VM task, I am simply repurposing the same parameter to delete the virtual machine created earlier in the process.
+Com a infraestrutura disponibilizada, a aplicação instalada e testada e o estado da VM capturada em uma imagem, parece sensato excluir a VM.
+
+.
+.
+.
+
+>Referencias:
+* https://docs.microsoft.com/en-us/azure/devtest-lab/devtest-lab-create-lab
+* https://azure.microsoft.com/en-us/solutions/dev-test/
+* http://www.visualstudiogeeks.com/blog/DevOps/Deploy-New-VM-To-Existing-AzureDevTestLab-From-VSTS
+* http://www.visualstudiogeeks.com/blog/DevOps/Use-VSTS-ReleaseManagement-to-Deploy-and-Test-in-AzureDevTestLabs
+* https://www.visualstudio.com/en-us/docs/release/examples/azure/provision-devtest-lab
