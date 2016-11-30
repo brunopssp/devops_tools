@@ -167,18 +167,26 @@ Esse script, quando roda no agente como parte do release definition, coleta os v
 	
 O resultado final da definição da Release, ficará como a imagem abaixo:
 
-![tasks-deploy](img\tasks-deploy.png)
+![tasks-deploy](img/tasks-deploy.png)
 
 Nas próximas seções será apresentado o  passo a passo para entender o processo de release em detalhe.
 ### Create VM
+
+![create-vm](img/create-vm.png)
+
 #### Azure DevTest Labs Create VM: 
 Clique em **Add build step**, clique na aba **deployment** e selecione **Azure DevTest Lab Create VM**
-  - Configure o Azure DevTest Lab Create VM selecionando o Endpoint do Azure Resource Manager configurado anteriormente, selecione o nome do dev test lab onde será realizado do deploy e selecione o ARM template.
-Abaixo, em destaque, estão os paramentros do template. Esses campos premitem sobrescrever os parametros requeridos pelo ARM template. .
+  - Configure o **Azure DevTest Lab Create VM** selecionando o Endpoint do Azure Resource Manager configurado anteriormente, selecione o nome do dev test lab onde será realizado o deploy e selecione o ARM template.
+Abaixo, em destaque, estão os parametros do template. Esses campos premitem sobrescrever os parametros requeridos pelo ARM template.
     1. Como demonstrado na figura abaixo, foram criadas variáveis de build para User.UserName, User.Password e a variável nativa Build.BuildNumber para o nome da VM.
     2. A variável em Output variable foi criada para armazenar o valor do id da VM que foi criada nesse processo.
+    
+![create-vm-01](img/create-vm.01.png)
 
 ### Configure VM
+
+![configure-vm](img/configure-vm.png)
+
 #### Azure Powershell: 
 O próximo estágio será para executar o script criado anteriormente para coletar os detalhes da DevTest Labs VM. Na release definition, selecione Add tasks e adicione uma tarefa Azure PowerShell da aba Deploy. Configure a tarefa:
   -Selecione Azure Resource Manager para o tipo de conexão.
@@ -218,18 +226,30 @@ Start-DscConfiguration -Path .\iis -Wait -Verbose
 ```
 
 ### Deploy Application
+
+![deploy-application](img/deploy-application.png)
+
 #### IIS Web App Management using WinRM: 
 Essa tarefa habilita a configuração e atualização de app pools e web sites no IIS 
 #### IIS Web App Deployment using WinRM: 
 Essa tarefa permite informar a localização do pacote do Web Deploy, e instalar a aplicação informando o website.
 ### Run CodedUI Tests
+
+![run-codedui-tests](img/run-codedui-tests.png)
+
 #### Test Agent Deployment: 
 Essa tarefa permite a instalação do agente de teste na máquina destino. Esse Agente de Teste pode então ser utilizado para habilitar coleta de dados ou rodar testes distribuidos usando o Visual Studio Test.
 #### Run Functional Tests: 
 O Projeto possui alguns testes funcionais que serão rodados após o deployment.
 ### Create Image
+
+![create-image](img/create-image.png)
+
 #### Azure DevTest Labs Create Custom Image: 
 Agora que a aplicação foi instalada e testada, vamos capturar o estado da VM como uma imagem customizada. Isso é especialmente útil se é identificado um bug no processo e é necessário reproduzir o bug na mesma VM, tendo uma imagem customizada da VM irá ajudar na reprodução desse bug mais rapidamente.
 ### Delete VM
+
+![delete-vm](img/delete-vm.png)
+
 #### Azure DevTest Labs Delete VM: 
 Com a infraestrutura disponibilizada, a aplicação instalada e testada e o estado da VM capturada em uma imagem, parece sensato excluir a VM. The AzureDevTestLab extension provides a task to delete an existing DevTestLab VM. As you can see below, I am passing $(labVMId) as the Lab VM Id to be deleted. This parameter is populated as part of the Create VM task, I am simply repurposing the same parameter to delete the virtual machine created earlier in the process.
