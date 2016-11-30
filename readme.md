@@ -24,18 +24,18 @@ O cenário segue a seguinte estrutura de configuração. O restante do documento
 ## Ambiente
 ### Instalar a Extension
 Inicie instalando a extensão [Azure DevTest Labs Tasks](https://marketplace.visualstudio.com/items?itemName=ms-azuredevtestlabs.tasks):
-  - Para Team Services, escolha Install.
-  - Para Team Foundation Server, escolha Download e instale a extension no seu servidor.
+  - Para Team Services, escolha *Install*.
+  - Para Team Foundation Server, escolha *Download* e instale a extension no seu servidor.
 
 E depois instale a extensão [IIS Web App Deployment Using WinRM](https://marketplace.visualstudio.com/items?itemName=ms-vscs-rm.iiswebapp)
-  - Para Team Services, escolha Install.
-  - Para Team Foundation Server, escolha Download e instale a extension no seu servidor.
+  - Para Team Services, escolha *Install*.
+  - Para Team Foundation Server, escolha *Download* e instale a extension no seu servidor.
 
 ### Configurar o Endpoint
 Siga esses passos para estabelecer uma conexão do Team Foundation Server com o Azure.
 É necessária uma Azure subscription para completar esses passos.
-  1. Abra o seu projeto do TFS no browser. Escolha o ícone Settings na barra de menu e selecione Services.
-  2. Na aba Services, escolha New Service Endpoint e selecione Azure Resource Manager.
+  1. Abra o seu projeto do TFS no browser. Escolha o ícone *Settings* na barra de menu e selecione *Services*.
+  2. Na aba Services, escolha *New Service Endpoint* e selecione *Azure Resource Manager*.
   3. Entre com um nome amigável para a conexão e selecione sua Azure subscription.
 
 ## Solução
@@ -48,27 +48,27 @@ Os seguintes passos ilustram como utilizar o [portal Azure](portal.azure.com) pa
 	
 ### Criar ARM Template
 Execute essas tarefas para criar o template do Azure Resource Manager (ARM) que será usado para criar uma Azure Virtual Machine sob demanda.
-  1. Entre no Azure portal.
-  2. Selecione More Services, e então selecione DevTest Labs na lista.
+  1. Entre no [Azure portal](portal.azure.com).
+  2. Selecione **More Services**, e então selecione **DevTest Labs** na lista.
   3. A partir da lista de labs, selecione o lab que se deseja criar a VM.
-  4. Na página Overview do lab, selecione + Virtual Machine.
-  5. Na página Choose a base, selecione uma base para a VM.
-  6. Na página Virtual machine, entre com o nome da nova virtual machine no text box Virtual machine name.
+  4. Na página Overview do lab, selecione **+ Virtual Machine**.
+  5. Na página **Choose a base**, selecione uma base para a VM.
+  6. Na página **Virtual machine**, entre com o nome da nova virtual machine no text box **Virtual machine name**.
   7. Selecione as especificações e configurações necessárias para criar a VM
-  8. Clique em View ARM template para visualizar o template.
-  9. Na página View Azure Resource Manager Template, selecione o texto do template.
+  8. Clique em **View ARM template** para visualizar o template.
+  9. Na página **View Azure Resource Manager Template**, selecione o texto do template.
   10. Copie o texto selecionado para a área de tranferência (Ctrl + C).
-  11. Selecione OK para fechar a página View Azure Resource Manager Template.
+  11. Selecione **OK** para fechar a página **View Azure Resource Manager Template**.
   12. Abra um editor de texto.
   13. Cole o template da área de tranferencia (Ctrl + V).
-  14. Salve o ARM template como um arquivo no seu computador. Nomeie o arquivo como CreateVMTemplate.json.
+  14. Salve o ARM template como um arquivo no seu computador. Nomeie o arquivo como **CreateVMTemplate.json**.
 
 ### Configurar WinRM no ARM Template
 O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File Copy* e *PowerShell on Target Machines*.
-  1. Na seção parameters do ARM template (**CreateVMTemplate.json**) inclua dois parametros…
-    - Run_Powershell.scriptFileUris: Links para os scripts de configuração do WinRM.
-    - Run_Powershell.scriptToRun: Nome do script que será executado(ponto de entrada).
-    - Run_PowerShell.scriptArguments: Variável para especificar o hostName da VM. O host name especificado aqui é usado para criar um certificado self-signed local para Https. Esse parametro será traduzido para  `*.brasilsouth.cloudapp.azure.com`. É possivel escolher uma convenção diferente se a VM participar de um domínio ou possui um formato fqdn diferente.
+  1. Na seção **_parameters_** do ARM template (**CreateVMTemplate.json**) inclua três parametros:
+    - **Run_Powershell.scriptFileUris**: Links para os scripts de configuração do WinRM.
+    - **Run_Powershell.scriptToRun**: Nome do script que será executado(ponto de entrada).
+    - **Run_PowerShell.scriptArguments**: Variável para especificar o hostName da VM. O host name especificado aqui é usado para criar um certificado self-signed local para Https. Esse parametro será traduzido para  `*.brasilsouth.cloudapp.azure.com`. É possivel escolher uma convenção diferente se a VM participar de um domínio ou possui um formato fqdn diferente.
 
     ```
     /* WinRM Custom Script Parameters */
@@ -96,7 +96,7 @@ O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File C
           "defaultValue": "[concat('*.',resourceGroup().location,'.cloudapp.azure.com')]"
         }
     ```
-  2. Na seção artifact do ARM template utilize o artefato powershell para realizar uma chamada para seu script powershell passando os parametros requeridos pelo script.
+  2. Na seção **_artifact_** do ARM template utilize o artefato powershell para realizar uma chamada para seu script powershell passando os parametros requeridos pelo script.
    
    ```
     "artifacts": 
@@ -124,7 +124,7 @@ O acesso via WinRM é necessário para usar tarefas de deploy como *Azure File C
               }
             ]
     ```
-  3. Salve as mudanças no template. O template agora está pronto para configurar o WinRM automaticamente…
+  3. Salve as mudanças no template. O template agora está pronto para configurar o WinRM automaticamente.
   4. Realize o commit do template no seu sistema de controle de fontes.
   
 ### Criar arquivo de coleta de variáveis para deploy
@@ -167,10 +167,12 @@ Esse script, quando roda no agente como parte do release definition, coleta os v
 	
 O resultado final da definição da Release, ficará como a imagem abaixo:
 
+![tasks-deploy](img\tasks-deploy.png)
+
 Nas próximas seções será apresentado o  passo a passo para entender o processo de release em detalhe.
 ### Create VM
 #### Azure DevTest Labs Create VM: 
-Clique em Add build step, clique na aba deployment e selecione Azure DevTest Lab Create VM
+Clique em **Add build step**, clique na aba **deployment** e selecione **Azure DevTest Lab Create VM**
   - Configure o Azure DevTest Lab Create VM selecionando o Endpoint do Azure Resource Manager configurado anteriormente, selecione o nome do dev test lab onde será realizado do deploy e selecione o ARM template.
 Abaixo, em destaque, estão os paramentros do template. Esses campos premitem sobrescrever os parametros requeridos pelo ARM template. .
     1. Como demonstrado na figura abaixo, foram criadas variáveis de build para User.UserName, User.Password e a variável nativa Build.BuildNumber para o nome da VM.
@@ -214,6 +216,7 @@ Configuration iis {
 iis
 Start-DscConfiguration -Path .\iis -Wait -Verbose 
 ```
+
 ### Deploy Application
 #### IIS Web App Management using WinRM: 
 Essa tarefa habilita a configuração e atualização de app pools e web sites no IIS 
