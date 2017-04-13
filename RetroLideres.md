@@ -1,0 +1,61 @@
+## Retrospectiva de Líderes - 06/04/2017
+
+### Positivos:
+- Flexibilidade dos desenvolvedores (Ex. Kaique ajudando outros squads);
+- Integração/parceria com outros times;
+- Merge com time de operações (controle X volume);
+- Harumi e Mikail, desafogaram as demandas;
+- Techleads estão fazendo bela continuidade pós Caxito;
+- Refining Extraordinários;
+- Techday
+- Ajuda do time de operações com atividades do escopo de melhorias: mapa de tags e card de saldos;
+- Apoio do time de crédito para o redesign);
+- Reuniões que ocorreram da CS;
+- Visão de roadmap dos projetos;
+- Nova postura do time de crédito com redesign;
+- Nova atitude do Fábio;
+- Time de melhorias encarou a sprint legal e está caminhando;
+- Status report encorpado;
+- Time de pagamentos mais sinergia com time de backend (Sérgio);
+- Entrosamento do time de melhorias;
+- Time Melhorias é muito independente e maduro;
+- Melhoria contínua de Fato;
+- Iniciativa dos times (top crashes, techdays, foco no que tem que atacar);
+- Processo de homologação gradual;
+- Time quase completo;
+- Chegada de mais um iOS em Operações;
+- Time completo (quase);
+- Evolução do time (técnica e negócios);
+- Entrega dos times; e
+- Andamento e organização do redesgin.
+
+### Podemos melhorar:
+- Incluir na sprint estórias que sejam viáveis;
+- Sprint factível;
+- Fazer lição de casa antes de refinar as estórias (API e UX);
+- Operações: incidente android, teste obrigatório (Bruno);
+- Postura do Bruno (Android);
+- QAs pré lançamento não atuam;
+- Visibilidade dos QAs (impedimentos);
+-  QA mais presente;
+- Pipeline de subida (QA para o app);
+- Melhorar acompanhamento do Jira;
+- Atualização do Jira;
+- Dar mais atenção ao Jira;
+- Melhor organização do Jira de operações;
+- Gestão do Jira do time de webview (Alcides + Rafa ou um SM);
+- Atualizar o Jira regularmente;
+- Análise mais qualitativa do pipeline de operações;
+- Prolongamento do techday;
+- Envolver os outros times nas nossas práticas;
+- Descolamento entre android e iOS no time de pagamentos;
+- Code review distribuído;
+- Não deixar cair os indicadores de qualidade do redesign;
+- Fazer em tempo o code review do redesign;
+- API em Operações sobrecarrega Marcele;
+- Organização de prioridades da Júlia;
+- Dúvidas de negócio em redesign, sempre direcionar ao PO;
+- Objetivo diferente na sprint de redesign (atuar no que restou da sprint passada + novas features);
+- Fazer os dailys com o Jira aberto;
+- To do de operações; e 
+- Fluxo de trabalho dos QAs.
